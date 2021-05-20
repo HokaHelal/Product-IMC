@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IMC.Product.Dto;
+using IMC.Product.Service;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,36 +14,54 @@ namespace IMC.Product.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
+        private readonly IProductUow _unitOfWork;
+        public ProductController(IProductUow unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
         // GET: api/<ProductController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var products = await _unitOfWork.GetAll();
+
+            return Ok(products);
         }
 
         // GET api/<ProductController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var product = await _unitOfWork.GetByIdAsync(id);
+
+            return Ok(product);
         }
 
         // POST api/<ProductController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] ProductDto newProduct)
         {
+            var isAdded = await _unitOfWork.AddAsync(newProduct);
+
+            return Ok(isAdded);
         }
 
         // PUT api/<ProductController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] ProductDto productDto)
         {
+            await _unitOfWork.UpdateAsync(productDto);
+
+            return Ok();
         }
 
         // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var isDeleted = await _unitOfWork.DeleteAsync(id);
+
+            return Ok(isDeleted);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace IMC.Product.Shared.Generic
             _dbset = context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(int Id)
+        public async virtual Task<T> GetByIdAsync(int Id)
         {
             return await _entities.Set<T>().FindAsync(Id);
         }

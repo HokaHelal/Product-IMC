@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using IMC.Product.Dto;
 using IMC.Product.Model;
 using IMC.Product.Repository;
 using IMC.Product.Shared.Errors;
 using IMC.Product.Shared.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace IMC.Product.Service
@@ -19,6 +21,21 @@ namespace IMC.Product.Service
             _context = context;
             _mapper = mapper;
         }
+        public async Task<List<ProductDto>> GetAll()
+        {
+            var products = await ProductRepository.GetAllAsync();
+            var ProductDtos = _mapper.Map<List<ProductDto>>(products);
+
+            return ProductDtos;
+        }
+        public async Task<List<ProductDto>> GetBySearchAsync(string search)
+        {
+            var products = await ProductRepository.GetBySearchAsync(search);
+            var ProductDtos = _mapper.Map<List<ProductDto>>(products);
+
+            return ProductDtos;
+        }
+
         public async Task<ProductDto> GetByIdAsync(int id)
         {
             var product = await ProductRepository.GetByIdAsync(id);
@@ -43,7 +60,7 @@ namespace IMC.Product.Service
             else
                 throw new BadRequestException("unable to delete product");
         }
-        public async void UpdateAsync(ProductDto productDto)
+        public async Task UpdateAsync(ProductDto productDto)
         {
             try
             {
